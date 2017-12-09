@@ -31,10 +31,18 @@ public class Player
 
         // Add the card to the hand
         hand.Add(eCB);
-        FanHand();
-        return (eCB);
-    }
 
+        if (type == PlayerType.human)
+        {
+            CardBartok[] cards = hand.ToArray();
+            cards = cards.OrderBy(cd => cd.rank).ToArray();
+            hand = new List<CardBartok>(cards);
+        }
+
+        FanHand();
+        return (eCB);     
+    }
+    
     // Remove a card from the hand
     public CardBartok RemoveCard(CardBartok cb)
     {
