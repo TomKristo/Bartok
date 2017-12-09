@@ -2,9 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum TurnPhase
+{
+    idle,
+    pre,
+    waiting,
+    post,
+    gameOver
+}
+
 public class Bartok : MonoBehaviour
 {
     static public Bartok S;
+
+    static public Player CURRENT_PLAYER;
 
     public TextAsset deckXML;
     public TextAsset layoutXML;
@@ -27,10 +38,13 @@ public class Bartok : MonoBehaviour
     public List<Player> players;
     public CardBartok targetCard;
 
+    public TurnPhase phase = TurnPhase.idle;
+    public GameObject turnLight;
 
     void Awake()
     {
         S = this;
+        turnLight = GameObject.Find("TurnLight");
     }
 
     void Start()
@@ -58,7 +72,7 @@ public class Bartok : MonoBehaviour
         }
         return (lCB);
     }
-    
+
     // Position all the cards in the drawPile properly
     public void ArrangeDrawPile()
     {
@@ -123,6 +137,53 @@ public class Bartok : MonoBehaviour
     public void DrawFirstTarget()
     {
         CardBartok tCB = MoveToTarget(Draw());
+        tCB.reportFinishTo = this.gameObject;
+    }
+
+    public void CBCallback(CardBartok cb)
+    {
+        Utils.tr(Utils.RoundToPlaces(Time.time), "Bartok.CBCallback()", cb.name);
+        StartGame();
+    }
+
+    public void StartGame()
+    {
+        PassTurn(1);
+    }
+
+    public void PassTurn(int num = -1)
+    {
+        if (num == -1)
+        {
+            int ndx = players.IndexOf(CURRENT_PLAYER);
+            num = (ndx + 1) % 4;
+        }
+
+        int lastPlayerNum = -1;
+        if (CURRENT_PLAYER != null)
+        {
+            lastPlayerNum = CURRENT_PLAYER.playerNum;
+        }
+
+        CURRENT_PLAYER = players[num];
+        phase = TurnPhase.pre;
+
+        CURRENT_PLAYER.TakeTurn();
+
+        Vector3 lPos = CURRENT_PLAYER.handSlotDef.pos + Vector3.back * 5;
+        turnLight.transform.position = lPos;
+        Utils.tr(Utils.RoundToPlaces(Time.time), "Bartok.PassTurn()", "Old: " + lastPlayerNum, "New: " + CURRENT_PLAYER.playerNum);
+    }
+
+    public bool ValidPlay(CardBartok cb)
+    {
+        if (cb.rank == targetCard.rank) return (true);
+        if (cb.suit == targetCard.suit)
+        {
+            return (true);
+        }
+
+        return (false);
     }
 
     public CardBartok MoveToTarget(CardBartok tCB)
@@ -137,7 +198,7 @@ public class Bartok : MonoBehaviour
         {
             MoveToDiscard(targetCard);
         }
-            targetCard = tCB;
+        targetCard = tCB;
         return (tCB);
     }
 
@@ -161,7 +222,10 @@ public class Bartok : MonoBehaviour
     }
 
 
+
     // This Update method is used to test adding cards to players' hands
+
+/*
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -181,4 +245,5 @@ public class Bartok : MonoBehaviour
             players[3].AddCard(Draw());
         }
     }
+*/
 }
