@@ -12,6 +12,8 @@ public class Bartok : MonoBehaviour
 
     // The number of degrees to fan each card in a hand
     public float handFanDegrees = 10f;
+    public int numStartingCards = 7;
+    public float drawTimeStagger = 0.1f;
 
     public bool ________________;
 
@@ -101,12 +103,41 @@ public class Bartok : MonoBehaviour
             players.Add(pl);
             pl.playerNum = players.Count;
         }
+
         players[0].type = PlayerType.human; // Make the 0th player human
 
+        CardBartok tCB;
+        for (int i = 0; i < numStartingCards; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                tCB = Draw();
+                tCB.timeStart = Time.time + drawTimeStagger * (i * 4 + j);
+                players[(j + 1) % 4].AddCard(tCB);
+            }
+        }
+
+        Invoke("DrawFirstTarget", drawTimeStagger * (numStartingCards * 4 + 4));
     }
 
-    // The Draw function will pull a single card from the drawPile and return it
-    public CardBartok Draw()
+    public void DrawFirstTarget()
+    {
+        CardBartok tCB = MoveToTarget(Draw());
+    }
+
+    public CardBartok MoveToTarget(CardBartok tCB)
+    {
+        tCB.timeStart = 0;
+        tCB.MoveTo(layout.discardPile.pos + Vector3.back);
+        tCB.state = CBState.toTarget;
+        tCB.faceUp = true;
+
+        targetCard = tCB;
+        return (tCB);
+    }
+
+        // The Draw function will pull a single card from the drawPile and return it
+        public CardBartok Draw()
     {
         CardBartok cd = drawPile[0];     // Pull the 0th CardProspector
         drawPile.RemoveAt(0);            // Then remove it from List<> drawPile
