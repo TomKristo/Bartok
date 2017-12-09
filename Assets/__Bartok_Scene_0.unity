@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deckXML: {fileID: 4900000, guid: c76312a0fb08948699e1abf935e4a957, type: 3}
-  layoutXML: {fileID: 11500000, guid: 12b58e284874c8c4da5d41e9194cb8a3, type: 3}
+  layoutXML: {fileID: 4900000, guid: e9dada43c8b097049a1e4d45762eae1a, type: 3}
   layoutCenter: {x: 0, y: 0, z: 0}
   handFanDegrees: 10
   numStartingCards: 7
@@ -352,6 +352,8 @@ MonoBehaviour:
   layoutAnchor: {fileID: 0}
   players: []
   targetCard: {fileID: 0}
+  phase: 0
+  turnLight: {fileID: 0}
 --- !u!114 &827460516
 MonoBehaviour:
   m_ObjectHideFlags: 0

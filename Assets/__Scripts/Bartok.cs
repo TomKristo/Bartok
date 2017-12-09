@@ -221,29 +221,60 @@ public class Bartok : MonoBehaviour
         return (cd);                        // And return it
     }
 
+    public void CardClicked(CardBartok tCB)
+    {
+        if (CURRENT_PLAYER.type != PlayerType.human) return;
+        if (phase == TurnPhase.waiting) return;
 
+        switch (tCB.state)
+        {
+            case CBState.drawpile:
+                CardBartok cb = CURRENT_PLAYER.AddCard(Draw());
+                cb.callbackPlayer = CURRENT_PLAYER;
+                Utils.tr(Utils.RoundToPlaces(Time.time), "Bartok.CardClicked()", "Draw", cb.name);
+                phase = TurnPhase.waiting;
+                break;
+
+            case CBState.hand:
+                if (ValidPlay(tCB))
+                {
+                    CURRENT_PLAYER.RemoveCard(tCB);
+                    MoveToTarget(tCB);
+                    tCB.callbackPlayer = CURRENT_PLAYER;
+                    Utils.tr(Utils.RoundToPlaces(Time.time), "Bartok.CardClicked()", "Play", tCB.name, targetCard.name + " is target");
+                    phase = TurnPhase.waiting;
+                }
+
+                else
+                {
+                    Utils.tr(Utils.RoundToPlaces(Time.time), "Bartok.CardClicked()", "Attempted to Play", tCB.name, targetCard.name + " is target");
+                }
+
+                break;
+        }
+    }
 
     // This Update method is used to test adding cards to players' hands
 
-/*
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+    /*
+        void Update()
         {
-            players[0].AddCard(Draw());
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                players[0].AddCard(Draw());
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                players[1].AddCard(Draw());
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                players[2].AddCard(Draw());
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                players[3].AddCard(Draw());
+            }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            players[1].AddCard(Draw());
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            players[2].AddCard(Draw());
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            players[3].AddCard(Draw());
-        }
-    }
-*/
+    */
 }

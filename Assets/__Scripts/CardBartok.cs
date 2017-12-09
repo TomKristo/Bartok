@@ -31,6 +31,12 @@ public class CardBartok : Card
     public string eventualSortLayer;
 
     public GameObject reportFinishTo = null;
+    public Player callbackPlayer = null;
+
+    void Awake()
+    {
+        callbackPlayer = null;
+    }
 
     public void MoveTo(Vector3 ePos, Quaternion eRot)
     {
@@ -86,9 +92,10 @@ public class CardBartok : Card
                         reportFinishTo.SendMessage("CBCallback", this);
                         reportFinishTo = null;
                     }
-                    else
+                    else if (callbackPlayer != null)
                     {
-
+                        callbackPlayer.CBCallback(this);
+                        callbackPlayer = null;
                     }
                 }
                 else
@@ -109,5 +116,11 @@ public class CardBartok : Card
 
                 break;
         }
+    }
+
+    override public void OnMouseUpAsButton()
+    {
+        Bartok.S.CardClicked(this);
+        base.OnMouseUpAsButton();
     }
 }
