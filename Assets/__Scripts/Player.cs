@@ -39,6 +39,9 @@ public class Player
             hand = new List<CardBartok>(cards);
         }
 
+        eCB.SetSortingLayerName("10");
+        eCB.eventualSortLayer = handSlotDef.layerName;
+
         FanHand();
         return (eCB);     
     }
@@ -55,6 +58,7 @@ public class Player
     {
         float startRot = 0;
         startRot = handSlotDef.rot;
+
         if (hand.Count > 1)
         {
             startRot += Bartok.S.handFanDegrees * (hand.Count - 1) / 2;
@@ -84,8 +88,8 @@ public class Player
             */
 
             hand[i].faceUp = (type == PlayerType.human);
-
-            hand[i].SetSortOrder(i * 4);
+            hand[i].eventualSortOrder = i * 4;
+            //hand[i].SetSortOrder(i * 4);
         }
     }
 }
